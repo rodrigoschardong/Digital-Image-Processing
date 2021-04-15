@@ -1,3 +1,8 @@
+"""
+    Rodrigo Schardong
+    Dithering
+"""
+
 import cv2
 import numpy as np
 
