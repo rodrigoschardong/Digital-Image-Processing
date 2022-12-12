@@ -31,17 +31,22 @@ class FaceDetection():
     def __init__(self, imagePath, cascadePath):
         self.image = cv2.imread(imagePath)
         self.faceDetector = cv2.CascadeClassifier(cascadePath)
+        self.proportion = [1,1]
         self.lastImage = self.image.copy()
 
     def DisplayImage(self):
         DisplayImg(self.lastImage)
 
     def ResizeImage(self, height, width):
+        shape = self.image.shape
+        
+        self.proportion = [shape[0] / height, shape[1] / width]
         self.resizedImage = cv2.resize(self.image, (width, height))
         self.last = self.resizedImage.copy()
+        print(self.last.shape)
     
-    def FaceDetect(self):
-        self.detections = self.faceDetector.detectMultiScale(cv2.cvtColor(self.last, cv2.COLOR_BGR2GRAY))
+    def FaceDetect(self, scaleFactor = 1.1, minNeighbors = 1, minSize = 50, maxSize = 700):     
+        self.detections = self.faceDetector.detectMultiScale(cv2.cvtColor(self.last, cv2.COLOR_BGR2GRAY), scaleFactor = scaleFactor, minNeighbors = minNeighbors, minSize = (minSize, minSize), maxSize = (maxSize, maxSize))
         self.imageWithFacesDetected = self.last.copy()
         for x, y, w, h in self.detections:
             #print(x, y, w, h)
