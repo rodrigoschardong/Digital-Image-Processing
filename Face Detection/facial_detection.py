@@ -1,4 +1,5 @@
 import cv2
+import dlib
 from matplotlib import pyplot as plt 
 
 def DisplayInOut(inImage, outImage, inIsGray = 0, outIsGray = 0):   
@@ -28,9 +29,8 @@ def DisplayImg(inImage, inIsGray = 0,):
     plt.plot()
 
 class FaceDetection():
-    def __init__(self, imagePath, cascadePath):
+    def __init__(self, imagePath):
         self.image = cv2.imread(imagePath)
-        self.faceDetector = cv2.CascadeClassifier(cascadePath)
         self.proportion = [1,1]
         self.lastImage = self.image.copy()
 
@@ -41,17 +41,26 @@ class FaceDetection():
         shape = self.image.shape
         
         self.proportion = [shape[0] / height, shape[1] / width]
-        self.resizedImage = cv2.resize(self.image, (width, height))
-        self.last = self.resizedImage.copy()
+        resizedImage = cv2.resize(self.image, (width, height))
+        self.lastImage = resizedImage.copy()
         #print(self.last.shape)
     
-    def FaceDetectHaarscade(self, scaleFactor = 1.1, minNeighbors = 1, minSize = 50, maxSize = 700):     
-        self.detections = self.faceDetector.detectMultiScale(cv2.cvtColor(self.last, cv2.COLOR_BGR2GRAY), scaleFactor = scaleFactor, minNeighbors = minNeighbors, minSize = (minSize, minSize), maxSize = (maxSize, maxSize))
-        self.imageWithFacesDetected = self.last.copy()
-        for x, y, w, h in self.detections:
+    def FaceDetectHaarscade(self, cascadePath, scaleFactor = 1.1, minNeighbors = 1, minSize = 50, maxSize = 700):     
+        faceDetector = cv2.CascadeClassifier(cascadePath)
+        detections = faceDetector.detectMultiScale(cv2.cvtColor(self.lastImage, cv2.COLOR_BGR2GRAY), scaleFactor = scaleFactor, minNeighbors = minNeighbors, minSize = (minSize, minSize), maxSize = (maxSize, maxSize))
+        imageWithFacesDetected = self.lastImage.copy()
+        for x, y, w, h in detections:
             #print(x, y, w, h)
-            cv2.rectangle(self.imageWithFacesDetected, (x, y), (x + w, y + h), (0,255,0), 2)
-        self.lastImage = self.imageWithFacesDetected.copy()
+            cv2.rectangle(imageWithFacesDetected, (x, y), (x + w, y + h), (0,255,0), 2)
+        self.lastImage = imageWithFacesDetected.copy()
+
+    def FaceDetectHOG(self, scale = 1):
+        detector = dlib.get_frontal_face_detector()
+        detected = detector(self.lastImage, scale)
+        imageWithFacesDetected = self.lastImage.copy()
+        for face in detected:
+             cv2.rectangle(imageWithFacesDetected, (face.left(), face.top()), (face.right(), face.bottom()), (0,255,0), 2)
+        self.lastImage = imageWithFacesDetected.copy()
 
 if __name__ == '__main__':
-    image = cv2.imread("./test.jpg")
+    image = cv2.imread("./images/test.jpg")
