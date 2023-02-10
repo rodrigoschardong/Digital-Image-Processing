@@ -62,5 +62,14 @@ class FaceDetection():
              cv2.rectangle(imageWithFacesDetected, (face.left(), face.top()), (face.right(), face.bottom()), (0,255,0), 2)
         self.lastImage = imageWithFacesDetected.copy()
 
+    def FaceDetectCNN(self, weightPath, scale, confidence):
+        detector = dlib.cnn_face_detection_model_v1(weightPath)
+        detected = detector(self.lastImage, scale)
+        imageWithFacesDetected = self.lastImage.copy()
+        for face in detected:
+            if(face.confidence > confidence):
+                cv2.rectangle(imageWithFacesDetected, (face.rect.left(), face.rect.top()), (face.rect.right(), face.rect.bottom()), (0,255,0), 2)
+        self.lastImage = imageWithFacesDetected.copy()
+
 if __name__ == '__main__':
     image = cv2.imread("./images/test.jpg")
