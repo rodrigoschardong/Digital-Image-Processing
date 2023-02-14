@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt 
 
+
 def DisplayInOut(inImage, outImage, inIsGray = 0, outIsGray = 0):   
     if(inIsGray == 1):
         inImage = cv2.merge((inImage,inImage,inImage))
@@ -34,7 +35,7 @@ class FaceRecognizer():
         self.image = image.copy()
         self.proportion = [1,1]
         self.lastImage = self.image.copy()
-        
+
     def DisplayImage(self):
         DisplayImg(self.lastImage)
 
